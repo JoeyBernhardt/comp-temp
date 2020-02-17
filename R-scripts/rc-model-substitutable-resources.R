@@ -1,4 +1,7 @@
-Arranhius<-function(Temp, E, b1, ref_temp = 0) {
+
+
+
+arrhenius<-function(Temp, E, b1, ref_temp = 0) {
   k<-8.62e-05 #Boltzmann's constant
   E <- E # 0.6 # activation energy (eV)
   T<-Temp+273.15 #range of temp in K
@@ -8,12 +11,12 @@ Arranhius<-function(Temp, E, b1, ref_temp = 0) {
   return(metabolism)
 }
 
-b <- Arranhius(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = 1)
-d <- 0.25 + Arranhius(Temp = 0:40, E = 0.75, b1 = 0.25, ref_temp = )
+b <- arrhenius(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = 1)
+d <- 0.25 + arrhenius(Temp = 0:40, E = 0.75, b1 = 0.25, ref_temp = )
 plot(b-d, ylim = c(0,max(b-d)), type = "l")
 
-b2 <- Arranhius(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = -2)
-d2 <- 0.25 + Arranhius(Temp = 0:40, E = 0.75, b1 = 0.25, ref_temp = -2)
+b2 <- arrhenius(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = -2)
+d2 <- 0.25 + arrhenius(Temp = 0:40, E = 0.75, b1 = 0.25, ref_temp = -2)
 lines(b2-d2, col = 2)
 
 library(tidyverse)
@@ -24,11 +27,11 @@ library(cowplot)
 ### Here species 1 is RED species 2 is BLUE
 temp_RC <- function(T = 25, r_eA = 0.6, c_eA = 0.6, w_eA = 0, k_eA = 0, ref_temp2 = 0){
   D = 0.25 #0.7 #mortality rate
-  c11 = Arranhius(Temp = T, E = c_eA, b1 = 0.2); c12 = Arranhius(Temp = T, E = c_eA, b1 = 0.4); c21 = Arranhius(Temp = T, E = c_eA, b1 = 0.5); c22 = Arranhius(Temp = T, E = c_eA, b1 = 0.2) ### cij = per capita consumption of comsumer i on resource j
-  w11 = Arranhius(Temp = T, E = w_eA, b1 = 0.2); w12 = Arranhius(Temp = T, E = w_eA, b1 = 0.4); w21 = Arranhius(Temp = T, E = w_eA, b1 = 0.4); w22 = Arranhius(Temp = T, E = w_eA, b1 = 0.2) ## wij = weighting factor that converts availability of resource j into consumer Ni
-  k1 = Arranhius(Temp = T, E = k_eA, b1 = 0.1); k2 = Arranhius(Temp = T, E = k_eA, b1 = 0.1) #half saturation constant for N resource consumption
-  r1 = Arranhius(Temp = T, E = r_eA, b1 = 0.5) - Arranhius(Temp = T, E = 0.74, b1 = 0.25); 
-  r2 = Arranhius(Temp = T, E = r_eA, b1 = 0.5, ref_temp = ref_temp2) - Arranhius(Temp = T, E = 0.74, b1 = 0.25, ref_temp = ref_temp2) #population growth rates
+  c11 = arrhenius(Temp = T, E = c_eA, b1 = 0.2); c12 = arrhenius(Temp = T, E = c_eA, b1 = 0.4); c21 = arrhenius(Temp = T, E = c_eA, b1 = 0.5); c22 = arrhenius(Temp = T, E = c_eA, b1 = 0.2) ### cij = per capita consumption of comsumer i on resource j
+  w11 = arrhenius(Temp = T, E = w_eA, b1 = 0.2); w12 = arrhenius(Temp = T, E = w_eA, b1 = 0.4); w21 = arrhenius(Temp = T, E = w_eA, b1 = 0.4); w22 = arrhenius(Temp = T, E = w_eA, b1 = 0.2) ## wij = weighting factor that converts availability of resource j into consumer Ni
+  k1 = arrhenius(Temp = T, E = k_eA, b1 = 0.1); k2 = arrhenius(Temp = T, E = k_eA, b1 = 0.1) #half saturation constant for N resource consumption
+  r1 = arrhenius(Temp = T, E = r_eA, b1 = 0.5) - arrhenius(Temp = T, E = 0.74, b1 = 0.25); 
+  r2 = arrhenius(Temp = T, E = r_eA, b1 = 0.5, ref_temp = ref_temp2) - arrhenius(Temp = T, E = 0.74, b1 = 0.25, ref_temp = ref_temp2) #population growth rates
   T1 = 1; T2 = 1 #minimum amount of resource required for growth
   
   species1_consumption <- c12/c11
@@ -223,11 +226,11 @@ ggsave("./figures/metabolic_explore3.png", height = 6, width = 5)
 #now vary Cs and Ws separately with T#####
 temp_RC_2 <- function(T = 25, r_eA = 0.6, c_eA11 = 0.6, c_eA12 = 0.6, c_eA22 = 0.6, c_eA21 = 0.6, w_eA = 0, k_eA = 0, ref_temp2 = 0){
   D = 0.25 
-  c11 = Arranhius(Temp = T, E = c_eA11, b1 = 0.2); c12 = Arranhius(Temp = T, E = c_eA12, b1 = 0.4); c21 = Arranhius(Temp = T, E = c_eA21, b1 = 0.5); c22 = Arranhius(Temp = T, E = c_eA22, b1 = 0.2) ### cij = per capita consumption of comsumer i on resource j
-  w11 = Arranhius(Temp = T, E = w_eA, b1 = 0.2); w12 = Arranhius(Temp = T, E = w_eA, b1 = 0.4); w21 = Arranhius(Temp = T, E = w_eA, b1 = 0.4); w22 = Arranhius(Temp = T, E = w_eA, b1 = 0.2) ## wij = weighting factor that converts availability of resource j into consumer Ni
-  k1 = Arranhius(Temp = T, E = k_eA, b1 = 0.1); k2 = Arranhius(Temp = T, E = k_eA, b1 = 0.1) #half saturation constant for N resource consumption
-  r1 = Arranhius(Temp = T, E = r_eA, b1 = 0.5) - Arranhius(Temp = T, E = 0.74, b1 = 0.25); 
-  r2 = Arranhius(Temp = T, E = r_eA, b1 = 0.5, ref_temp = ref_temp2) - Arranhius(Temp = T, E = 0.74, b1 = 0.25, ref_temp = ref_temp2) #population growth rates
+  c11 = arrhenius(Temp = T, E = c_eA11, b1 = 0.2); c12 = arrhenius(Temp = T, E = c_eA12, b1 = 0.4); c21 = arrhenius(Temp = T, E = c_eA21, b1 = 0.5); c22 = arrhenius(Temp = T, E = c_eA22, b1 = 0.2) ### cij = per capita consumption of comsumer i on resource j
+  w11 = arrhenius(Temp = T, E = w_eA, b1 = 0.2); w12 = arrhenius(Temp = T, E = w_eA, b1 = 0.4); w21 = arrhenius(Temp = T, E = w_eA, b1 = 0.4); w22 = arrhenius(Temp = T, E = w_eA, b1 = 0.2) ## wij = weighting factor that converts availability of resource j into consumer Ni
+  k1 = arrhenius(Temp = T, E = k_eA, b1 = 0.1); k2 = arrhenius(Temp = T, E = k_eA, b1 = 0.1) #half saturation constant for N resource consumption
+  r1 = arrhenius(Temp = T, E = r_eA, b1 = 0.5) - arrhenius(Temp = T, E = 0.74, b1 = 0.25); 
+  r2 = arrhenius(Temp = T, E = r_eA, b1 = 0.5, ref_temp = ref_temp2) - arrhenius(Temp = T, E = 0.74, b1 = 0.25, ref_temp = ref_temp2) #population growth rates
   T1 = 1; T2 = 1 #minimum amount of resource required for growth
   
   species1_consumption <- c12/c11

@@ -1,5 +1,5 @@
 ### Joey April 16 2019
-
+library(tidyverse)
 library(cowplot)
 theme_set(theme_cowplot())
 
@@ -50,7 +50,7 @@ fit_ratio <- sqrt((a11*a12)/(a22*a21)) * (r2-D)/(r1-D) #fitness ratio -- ask Pat
 coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 
 
-
+### We use the Arrhenius function to model the temperature dependence
 
 arrhenius_function <- function(Temp, E, b1, ref_temp = 1) {
   k<-8.62e-05 #Boltzmann's constant
@@ -62,6 +62,7 @@ arrhenius_function <- function(Temp, E, b1, ref_temp = 1) {
   return(metabolism)
 }
 
+### to visualize what the arrhenius function looks like
 b <- arrhenius_function(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = 1)
 d <- 0.25 + arrhenius_function(Temp = 0:40, E = 0.75, b1 = 0.25, ref_temp = 1)
 plot(b-d, ylim = c(0,max(b-d)), type = "l")
@@ -75,7 +76,7 @@ library(cowplot)
 
 #' Setup Tilman's consumer resource model parameters 
 
-### Here species 1 is RED species 2 is BLUE
+### Here we make the species differt in the intercepts of the their thermal performance curves
 temp_dependences <- function(T = 25, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_temp2 = 0){
 	c11 = arrhenius_function(Temp = T, E = c_Ea, b1 = 0.2); c12 = arrhenius_function(Temp = T, E = c_Ea, b1 = 0.4); c21 = arrhenius_function(Temp = T, E = c_Ea, b1 = 0.5); c22 = arrhenius_function(Temp = T, E = c_Ea, b1 = 0.2) ### cij = per capita consumption of comsumer i on resource j
   k12 = arrhenius_function(Temp = T, E = k_Ea, b1 = 0.2); k21 = arrhenius_function(Temp = T, E = k_Ea, b1 = 0.1) #half saturation constant for N resource consumption
@@ -111,7 +112,7 @@ temp_dependences <- function(T = 25, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
   data.frame(a11 = a11, a12 = a12, a22 = a22, a21 = a21, R12 = R12, R11 = R11, R22 = R22, R21= R21, K1 = (r1)/a11, K2 = (r2)/a22, T = T, m1 = m1, m2 = m2, r1 = r1, r2 = r2, c11 = c11,  c12 = c12,  c21 = c21, c22 = c22, stabil_potential = stabil_potential, fit_ratio = fit_ratio, rho = rho, coexist = coexist)
 }
 
-
+### explore different temperature dependences
 results <- data.frame()
 for(i in 1:6){
   for(j in 1:6){

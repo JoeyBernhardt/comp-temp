@@ -4,7 +4,7 @@ all_rstars <- read_csv("data/all-rstars.csv")
 
 #### goal here is to find the alphas depending on what zone we are in
 
-
+### We use Arrhenius function to model the temperature dependence
 arrhenius_function <- function(Temp, E, b1, ref_temp = 20) {
 	k<-8.62e-05 #Boltzmann's constant
 	E <- E # 0.6 # activation energy (eV)
