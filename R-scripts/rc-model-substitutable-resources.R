@@ -1,5 +1,9 @@
 
 
+library(tidyverse)
+library(cowplot)
+theme_set(theme_cowplot())
+
 
 arrhenius<-function(Temp, E, b1, ref_temp = 0) {
   k<-8.62e-05 #Boltzmann's constant
@@ -85,9 +89,7 @@ for(i in 1:20){
   results <- bind_rows(results, hold)
   }}
 
-#results <- results %>% filter(r >0)
 
-library(cowplot)
 plot_grid(ggplot(results, aes(x = T, y = r1, group = interaction(r_c_ratio, w_eA), color = r_c_ratio, linetype = factor(w_eA)))+
             geom_line()+
             scale_linetype("w_eA")+
@@ -130,7 +132,7 @@ plot_grid(ggplot(results, aes(x = T, y = r1, group = interaction(r_c_ratio, w_eA
             #coord_cartesian(ylim = c(0, max(results$K1)))+
             ylab(label = "K")+
             scale_y_log10(), nrow = 3)
-ggsave("./figures/metabolic_explore.png", height = 11, width = 10)
+ggsave("figures/metabolic_explore.png", height = 11, width = 10)
 
 ggplot(results, aes(x = T, y = a22, group = interaction(r_c_ratio, w_eA), color = r_c_ratio, linetype = factor(w_eA)))+
   geom_line()+
@@ -203,7 +205,7 @@ plot_grid(ggplot(results2, aes(x = T, y = r1, group = interaction(c_eA, k_eA), c
             #coord_cartesian(ylim = c(0, max(results$K1)))+
             ylab(label = "K")+
             scale_y_log10(), nrow = 3)
-ggsave("./figures/metabolic_explore2.png", height = 11, width = 10)
+ggsave("figures/metabolic_explore2.png", height = 11, width = 10)
 
 
 results3<-temp_RC(T = seq(0, 35,length = 100), ref_temp2 = -2)
@@ -221,7 +223,7 @@ results3 %>% ggplot(aes(x = T, y = fit_ratio, shape = coexist))+
   geom_point()+
   scale_shape_manual(values = c(1,19))+
   scale_y_log10(),nrow = 2)
-ggsave("./figures/metabolic_explore3.png", height = 6, width = 5)
+ggsave("figures/metabolic_explore3.png", height = 6, width = 5)
 
 #now vary Cs and Ws separately with T#####
 temp_RC_2 <- function(T = 25, r_eA = 0.6, c_eA11 = 0.6, c_eA12 = 0.6, c_eA22 = 0.6, c_eA21 = 0.6, w_eA = 0, k_eA = 0, ref_temp2 = 0){
@@ -303,7 +305,7 @@ ggplot(results4, aes(x = stabil_potential, y = fit_ratio, color = T, shape = coe
   scale_y_log10()+
   scale_color_viridis_c(option = "B", end = 0.8)+
   scale_shape_manual(values = c(1,19))
-ggsave("./figures/vary_cii.png", height = 8, width = 10)
+ggsave("figures/vary_cii.png", height = 8, width = 10)
 
 ggplot(results4, aes(x = stabil_potential, y = fit_ratio, color = T, shape = coexist))+
   geom_hline(yintercept = 1, color = "grey", linetype = 2)+

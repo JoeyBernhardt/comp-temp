@@ -253,4 +253,3 @@ results %>%
 ggsave("figures/zingis-temperature.png", width = 12, height = 10)
 
 
-unique(results$c_Ea)
