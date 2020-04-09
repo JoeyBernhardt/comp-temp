@@ -105,7 +105,8 @@ temp_dependences <- function(T = 25, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
   
   rho <- sqrt((a12*a21)/(a11*a22)) #niche overlap
   stabil_potential <- 1 - rho #stabilizing potential
-  fit_ratio <- sqrt((a11*a12)/(a22*a21)) * (r2-D)/(r1-D) #fitness ratio -- ask Patrick why he scaled his by the r's
+  # fit_ratio <- sqrt((a11*a12)/(a22*a21)) * (r2-D)/(r1-D) #fitness ratio -- ask Patrick why he scaled his by the r's
+  fit_ratio <- sqrt((a11*a12)/(a22*a21))
   coexist <- rho < fit_ratio &  fit_ratio < 1/rho
   
   
@@ -196,9 +197,9 @@ results %>%
 
 results %>% 
 	filter(r1 > 0) %>%
-	ggplot(aes(x = T, y = K1, group = m_Ea, color = m_Ea))+
-	geom_line()+
-	scale_color_viridis_c(end = 0.8)+
+	ggplot(aes(x = T, y = K1, group = m_Ea, color = m_Ea)) +
+	geom_line() +
+	scale_color_viridis_c(end = 0.8) +
 	facet_grid(c_Ea ~ m_Ea, scales = "free") +
 	ylab(label = "K") + xlab("Temperature (°C)")
 ggsave("figures/essential-resources-K-temperature.png", width = 7, height = 5)

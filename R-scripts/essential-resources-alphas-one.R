@@ -5,18 +5,18 @@ all_rstars <- read_csv("data/all-rstars.csv")
 #### goal here is to find the alphas depending on what zone we are in
 
 ### We use Arrhenius function to model the temperature dependence
-arrhenius_function <- function(Temp, E, b1, ref_temp = 20) {
+arrhenius_function <- function(Temp, E, b1, ref_temp = 0) {
 	k<-8.62e-05 #Boltzmann's constant
 	E <- E # 0.6 # activation energy (eV)
-	temperature <- Temp+273.15 #range of temp in K
+	T<-Temp+273.15 #range of temp in K
 	Tc <- ref_temp+273.15 #reference temperature
 	
-	metabolism<-(b1*exp(1)^(E*(1/(k*Tc)-1/(k*temperature))))
+	metabolism<-(b1*exp(1)^(E*(1/(k*Tc)-1/(k*T))))
 	return(metabolism)
 }
 
 
-find_alphas <- function(temperature, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_temp = 20){
+find_alphas <- function(T, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_temp = 0){
 	snippet <- all_rstars %>% 
 		filter(ancestor_id %in% c("anc4", "anc5")) %>% 
 		filter(treatment == "none")
@@ -24,7 +24,7 @@ find_alphas <- function(temperature, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
 	pop1 <- snippet$population[[1]]
 	pop2 <- snippet$population[[2]]
 	
-	c1P_b <- snippet$pc[snippet$population == pop1]
+	c1P_b <- snippet$pc[snippet$population == pop1] + 0.1
 	c2P_b <- snippet$pc[snippet$population == pop2]
 	c1N_b <- snippet$nc[snippet$population == pop1]
 	c2N_b <- snippet$nc[snippet$population == pop2]
@@ -33,7 +33,7 @@ find_alphas <- function(temperature, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
 	R2P_b <- snippet$p_star[snippet$population == pop2]
 	R1N_b <- snippet$n_star[snippet$population == pop1]
 	k1N_b <- snippet$n_ks[snippet$population == pop1]
-	k2N_b <- snippet$n_ks[snippet$population == pop2]
+	k2N_b <- snippet$n_ks[snippet$population == pop2] - 10
 	k1P_b <- snippet$p_ks[snippet$population == pop1]
 	k2P_b <- snippet$p_ks[snippet$population == pop2]
 	D <- 0.5
@@ -43,28 +43,23 @@ find_alphas <- function(temperature, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
 	SN <- 1000/300
 	SP <- 140/350
 	
-	r1_b <- max(snippet$p_umax[snippet$population == pop1], snippet$n_umax[snippet$population == pop1])
-	r2_b <- max(snippet$p_umax[snippet$population == pop2], snippet$n_umax[snippet$population == pop2])
+	# r1_b <- max(snippet$p_umax[snippet$population == pop1], snippet$n_umax[snippet$population == pop1])
+	# r2_b <- max(snippet$p_umax[snippet$population == pop2], snippet$n_umax[snippet$population == pop2])
 	
-	c_Ea = 0.3
-	k_Ea = 0.5
-	r_Ea = 0.3
-	m_Ea = 0.65
+	r1_b <- 1.2
+	r2_b <- 1.25
+	# c_Ea = 0.3
+	# k_Ea = 0.5
+	# r_Ea = 0.3
+	# m_Ea = 0.65
 	m1_b <- 0.1
 	m2_b <- 0.1
 	
-	c1P = arrhenius_function(Temp = temperature, E = c_Ea, b1 = c1P_b)
-	c1N = arrhenius_function(Temp = temperature, E = c_Ea, b1 = c1N_b)
-	c2P = arrhenius_function(Temp = temperature, E = c_Ea, b1 = c2P_b)
-	c2N = arrhenius_function(Temp = temperature, E = c_Ea, b1 = c2N_b) ### cij = per capita consumption of comsumer i on resource j
-	k1N = arrhenius_function(Temp = temperature, E = k_Ea, b1 = k1N_b)
-	k2P = arrhenius_function(Temp = temperature, E = k_Ea, b1= k2P_b) #half saturation constant for N resource consumption
-	k1P = arrhenius_function(Temp = temperature, E = k_Ea, b1 = k1P_b)
-	k2N = arrhenius_function(Temp = temperature, E = k_Ea, b1= k2N_b)
-	r1 = arrhenius_function(Temp = temperature, E = r_Ea, b1 = r1_b)
-	r2 = arrhenius_function(Temp = temperature, E = r_Ea, b1= r2_b, ref_temp = ref_temp2) #population growth rates
-	m1 = arrhenius_function(Temp = temperature, E = m_Ea, b1 = m1_b)
-	m2 = arrhenius_function(Temp = temperature, E = m_Ea, b1 = m2_b) # mortality rates
+	c1P = arrhenius_function(Temp = T, E = c_Ea, b1 = c1P_b); c1N = arrhenius_function(Temp = T, E = c_Ea, b1 = c1N_b); c2P = arrhenius_function(Temp = T, E = c_Ea, b1 = c2P_b); c2N = arrhenius_function(Temp = T, E = c_Ea, b1 = c2N_b) ### cij = per capita consumption of comsumer i on resource j
+	k1N = arrhenius_function(Temp = T, E = k_Ea, b1 = k1N_b); k2P = arrhenius_function(Temp = T, E = k_Ea, b1= k2P_b) #half saturation constant for N resource consumption
+	k1P = arrhenius_function(Temp = T, E = k_Ea, b1 = k1P_b); k2N = arrhenius_function(Temp = T, E = k_Ea, b1= k2N_b)
+	r1 = arrhenius_function(Temp = T, E = r_Ea, b1 = r1_b); r2 = arrhenius_function(Temp = T, E = r_Ea, b1= r2_b, ref_temp = ref_temp) #population growth rates
+	m1 = arrhenius_function(Temp = T, E = m_Ea, b1 = m1_b); m2 = arrhenius_function(Temp = T, E = m_Ea, b1 = m2_b) # mortality rates
 	
 	R1N <- (m1 * k1N)/ (r1 - m1)
 	R1P <- (m1 * k1P)/ (r1 - m1)
@@ -126,12 +121,12 @@ find_alphas <- function(temperature, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.
 	
 	rho <- sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22)) #niche overlap
 	stabil_potential <- 1 - rho #stabilizing potential
-	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21))  #fitness ratio -- ask Patrick why he scaled his by the r's
+	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21)) * (r_s$r2-D)/(r_s$r1-D) #fitness ratio -- ask Patrick why he scaled his by the r's
 	coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 	
 	
 	rs <- data.frame(R1N = R1N, R1P = R1P, R2N = R2N, R2P= R2P,
-			   K1 = (r1)/alphas_calc$a11, K2 = (r2)/alphas_calc$a22, temperature = temperature, m1 = m1, m2 = m2, c1P = c1P,  c1N = c1N,
+			   K1 = (r1)/alphas_calc$a11, K2 = (r2)/alphas_calc$a22, T = T, m1 = m1, m2 = m2, c1P = c1P,  c1N = c1N,
 			   c2P = c2P, c2N = c2N, stabil_potential = stabil_potential,
 			   fit_ratio = fit_ratio, rho = rho, coexist = coexist,
 					 a11 = alphas_calc$a11, a12 = alphas_calc$a12, a21 = alphas_calc$a21, a22 = alphas_calc$a22)
@@ -150,8 +145,9 @@ for(i in 1:350){
 	 	c_Ea <- 0.1*(z-1)
 		# c_Ea <- 0.5
 		m_Ea <- 0.1*(j-1)
-		temperature <- 0.1*(i-1)
-		hold <- find_alphas(temperature = temperature, r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 20)
+		T <- 0.1*(i-1)
+		hold <- find_alphas(T = T, r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 0)
+		# hold <- find_alphas(T = seq(25, 25, by = 0.1), r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 1)
 		hold$r_Ea <- r_Ea
 		hold$c_Ea <- c_Ea
 		hold$m_Ea <- m_Ea
@@ -167,12 +163,12 @@ min(results$fit_ratio)
 results %>% 
 	# filter(fit_ratio < 2) %>% 
 	# filter(T %in% c(0, 10, 20, 30, 40)) %>% 
-	ggplot(aes(x = R1N, y = R1P, color = temperature)) + geom_point() +
-	geom_segment(aes(x = R1N, y = R1P, xend = R1N + c1N/20, yend = R1P + c1P/20, color = temperature),
+	ggplot(aes(x = R1N, y = R1P, color = T)) + geom_point() +
+	geom_segment(aes(x = R1N, y = R1P, xend = R1N + c1N/20, yend = R1P + c1P/20, color = T),
 				 size = 0.5, linetype = 1, alpha = 1) +
-	geom_segment(aes(x = R1N, y = R1P, xend = R1N, yend = 0.2, color = temperature),
+	geom_segment(aes(x = R1N, y = R1P, xend = R1N, yend = 0.2, color = T),
 				 size = 0.5, linetype = 1, alpha = 1) +
-	geom_segment(aes(x = R1N, y = R1P, xend = 5, yend = R1P, color = temperature),
+	geom_segment(aes(x = R1N, y = R1P, xend = 5, yend = R1P, color = T),
 				 size = 0.5, linetype = 1, alpha = 1) +
 	ylab("P (uM)") + xlab("N (uM)") +
 	scale_colour_viridis_c() +
@@ -191,8 +187,8 @@ x <- seq(0.5,1.5,length = 100)
 lines.df <- data.frame(x = x, y = 1/(x), y2 = x)
 
 results %>% 
-	filter(fit_ratio < 2) %>% 
-ggplot(aes(x = stabil_potential, y = fit_ratio, color = temperature, shape = coexist))+
+	# filter(fit_ratio < 2) %>% 
+ggplot(aes(x = stabil_potential, y = fit_ratio, color = T, shape = coexist))+
 	geom_hline(yintercept = 1, color = "grey", linetype = 2)+
 	geom_vline(xintercept = 0, color = "grey", linetype = 2)+
 	geom_line(data = lines.df, aes(x = 1-x, y = y, color = NULL, shape = NULL))+
@@ -201,13 +197,43 @@ ggplot(aes(x = stabil_potential, y = fit_ratio, color = temperature, shape = coe
 	facet_grid(c_Ea ~ m_Ea, scales = "free") +
 	scale_color_viridis_c(option = "magma", end = 0.8)+
 	scale_shape_manual(values = c(0,19)) +
-	ylab("Fitness ratio") + xlab("Niche differences") +
-	xlim(-0.1, 0.1)
-ggsave("figures/essential-resources-chesson-plots.png", width = 14, height = 8)
+	ylab("Fitness ratio") + xlab("Niche differences") 
+ggsave("figures/essential-resources-chesson-plots-one.png", width = 14, height = 8)
+
+
+results %>% 
+	ggplot(aes(x = T, y = fit_ratio)) + geom_point()
+
+unique(results$c_Ea)
+results %>% 
+	dplyr::filter(m_Ea == "0") %>% 
+	dplyr::filter(c_Ea == "0.1") %>% 
+	ggplot(aes(x = T, y = stabil_potential)) + geom_line() +
+	geom_hline(yintercept = 0) +
+	ylab("Niche difference")
+
+unique(results$c_Ea)
+results %>% 
+	# dplyr::filter(m_Ea == "0") %>% 
+	# dplyr::filter(c_Ea == "0") %>% 
+	ggplot(aes(x = T, y = fit_ratio)) + geom_line(color = "blue") +
+	geom_hline(yintercept = 0) +
+	ylab("Fitness ratio") +
+	facet_grid(c_Ea ~ m_Ea) + xlab("Temperature (°C)")
+ggsave("figures/fitness-ratio-temperature-two.png", width = 14, height = 12)
+
+results %>% 
+	# dplyr::filter(m_Ea == "0") %>% 
+	# dplyr::filter(c_Ea == "0") %>% 
+	ggplot(aes(x = T, y = stabil_potential)) + geom_line(color = "blue") +
+	geom_hline(yintercept = 0) +
+	ylab("Niche difference") +
+	facet_grid(c_Ea ~ m_Ea) + xlab("Temperature (°C)")
+ggsave("figures/niche-difference-temperature-two.png", width = 14, height = 12)
 
 results %>% 
 	# filter(r1 > 0) %>%
-	ggplot(aes(x = temperature, y = R2N, group = m_Ea, color = m_Ea))+
+	ggplot(aes(x = T, y = R2N, group = m_Ea, color = m_Ea))+
 	geom_line()+
 	scale_color_viridis_c(end = 0.8)+
 	facet_grid(c_Ea ~ m_Ea, scales = "free") +
@@ -215,7 +241,7 @@ results %>%
 
 results %>% 
 	# filter(r1 > 0) %>%
-	ggplot(aes(x = temperature, y = R2P, group = m_Ea, color = m_Ea))+
+	ggplot(aes(x = T, y = R2P, group = m_Ea, color = m_Ea))+
 	geom_line()+
 	scale_color_viridis_c(end = 0.8)+
 	facet_grid(c_Ea ~ m_Ea, scales = "free") +
