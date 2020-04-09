@@ -15,51 +15,58 @@ arrhenius_function <- function(Temp, E, b1, ref_temp = 0) {
 	return(metabolism)
 }
 
+T <- 30
 
-find_alphas <- function(T, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_temp = 0){
-	snippet <- all_rstars %>% 
-		filter(ancestor_id %in% c("anc4", "anc5")) %>% 
-		filter(treatment == "none")
+# temp_dependences_MacArthur <- function(T = 25, r_Ea = 0.6, c_Ea = 0.6, K_Ea = 0, v_Ea = 0.0, m_Ea = 0.2, ref_temp2 = 0)
+
+find_alphas <- function(T, r_Ea = 0.6, c_Ea_1P = 0.9, c_Ea_1N = 0.7, c_Ea_2P = 0.1, c_Ea_2N = 0.3, k_Ea = 0, m_Ea = 0.2, ref_temp = 0){
+
+	c1P_b <- 0.1
+	c2P_b <- 0.5 ## slope for species 2 is 2.5, 
+	c1N_b <- 0.3
+	c2N_b <- 0.2
 	
-	pop1 <- snippet$population[[1]]
-	pop2 <- snippet$population[[2]]
+	R1P_b <- 0.1
+	R2P_b <- 0.5
+	R1N_b <- 5
+	R2N_b <- 1.6
 	
-	c1P_b <- snippet$pc[snippet$population == pop1] + 0.1
-	c2P_b <- snippet$pc[snippet$population == pop2]
-	c1N_b <- snippet$nc[snippet$population == pop1]
-	c2N_b <- snippet$nc[snippet$population == pop2]
-	R1P_b <- snippet$p_star[snippet$population == pop1]
-	R2N_b <- snippet$n_star[snippet$population == pop2]
-	R2P_b <- snippet$p_star[snippet$population == pop2]
-	R1N_b <- snippet$n_star[snippet$population == pop1]
-	k1N_b <- snippet$n_ks[snippet$population == pop1]
-	k2N_b <- snippet$n_ks[snippet$population == pop2] - 10
-	k1P_b <- snippet$p_ks[snippet$population == pop1]
-	k2P_b <- snippet$p_ks[snippet$population == pop2]
-	D <- 0.5
+	
+	
+	
+	k1N_b <- 33
+	k2N_b <- 17
+	k1P_b <- 1.2
+	k2P_b <- 2
+	
+	D <- 0.1
 	
 	## how can we define the consumption vector lines?
 	
-	SN <- 1000/300
+	SN <- 1000/200
 	SP <- 140/350
-	
-	# r1_b <- max(snippet$p_umax[snippet$population == pop1], snippet$n_umax[snippet$population == pop1])
-	# r2_b <- max(snippet$p_umax[snippet$population == pop2], snippet$n_umax[snippet$population == pop2])
+
 	
 	r1_b <- 1.2
 	r2_b <- 1.25
-	# c_Ea = 0.3
-	# k_Ea = 0.5
-	# r_Ea = 0.3
-	# m_Ea = 0.65
+
 	m1_b <- 0.1
 	m2_b <- 0.1
 	
-	c1P = arrhenius_function(Temp = T, E = c_Ea, b1 = c1P_b); c1N = arrhenius_function(Temp = T, E = c_Ea, b1 = c1N_b); c2P = arrhenius_function(Temp = T, E = c_Ea, b1 = c2P_b); c2N = arrhenius_function(Temp = T, E = c_Ea, b1 = c2N_b) ### cij = per capita consumption of comsumer i on resource j
-	k1N = arrhenius_function(Temp = T, E = k_Ea, b1 = k1N_b); k2P = arrhenius_function(Temp = T, E = k_Ea, b1= k2P_b) #half saturation constant for N resource consumption
-	k1P = arrhenius_function(Temp = T, E = k_Ea, b1 = k1P_b); k2N = arrhenius_function(Temp = T, E = k_Ea, b1= k2N_b)
-	r1 = arrhenius_function(Temp = T, E = r_Ea, b1 = r1_b); r2 = arrhenius_function(Temp = T, E = r_Ea, b1= r2_b, ref_temp = ref_temp) #population growth rates
-	m1 = arrhenius_function(Temp = T, E = m_Ea, b1 = m1_b); m2 = arrhenius_function(Temp = T, E = m_Ea, b1 = m2_b) # mortality rates
+	c1P = arrhenius_function(Temp = T, E = c_Ea_1P, b1 = c1P_b)
+	c1N = arrhenius_function(Temp = T, E = c_Ea_1N, b1 = c1N_b)
+	c2P = arrhenius_function(Temp = T, E = c_Ea_2P, b1 = c2P_b)
+	c2N = arrhenius_function(Temp = T, E = c_Ea_2N, b1 = c2N_b) ### cij = per capita consumption of comsumer i on resource j
+	
+	k1N = arrhenius_function(Temp = T, E = k_Ea, b1 = k1N_b)
+	k2P = arrhenius_function(Temp = T, E = k_Ea, b1= k2P_b) #half saturation constant for N resource consumption
+	k1P = arrhenius_function(Temp = T, E = k_Ea, b1 = k1P_b)
+	k2N = arrhenius_function(Temp = T, E = k_Ea, b1= k2N_b)
+	
+	r1 = arrhenius_function(Temp = T, E = r_Ea, b1 = r1_b)
+	r2 = arrhenius_function(Temp = T, E = r_Ea, b1= r2_b) #population growth rates
+	m1 = arrhenius_function(Temp = T, E = m_Ea, b1 = m1_b)
+	m2 = arrhenius_function(Temp = T, E = m_Ea, b1 = m2_b) # mortality rates
 	
 	R1N <- (m1 * k1N)/ (r1 - m1)
 	R1P <- (m1 * k1P)/ (r1 - m1)
@@ -91,7 +98,7 @@ find_alphas <- function(T, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_tem
 	
 	zones <- c("zone_middle", "zone_bottom", "zone_top")
 	zone <- zones[c(zone_middle, zone_bottom, zone_top)]
-	
+	zone <- "zone_middle"
 	alphas <- function(zone) {
 		if (zone == "zone_middle") {
 			a11 <- c1P / (D * (SP - R1P))
@@ -115,13 +122,13 @@ find_alphas <- function(T, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_tem
 	
 	alphas_calc <- alphas(zone)
 	r_s <- data.frame(r1 = r1, r2 = r2)
-	comps <- data.frame(pop1 = pop1, pop2 = pop2, D = D, treatment = snippet$treatment[1], zone = zone)
+	comps <- data.frame(D = D, zone = zone)
 	
 	
 	
 	rho <- sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22)) #niche overlap
 	stabil_potential <- 1 - rho #stabilizing potential
-	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21)) * (r_s$r2-D)/(r_s$r1-D) #fitness ratio -- ask Patrick why he scaled his by the r's
+	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21)) #fitness ratio 
 	coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 	
 	
@@ -135,6 +142,50 @@ find_alphas <- function(T, r_Ea = 0.6, c_Ea = 0.6, k_Ea = 0, m_Ea = 0.2, ref_tem
 	return(alphas_calc2)
 }
 
+temps <- seq(1,50, by = 0.5)
+results_1 <- temps %>% 
+	map_df(find_alphas) 
+
+results_1 %>% 
+	ggplot(aes(x = T, y = fit_ratio)) + geom_point()
+
+results_1 %>% 
+	ggplot(aes(x = T, y = round(stabil_potential, digits = 2))) + geom_point() +
+	ylab("Stabilization potential")
+
+results_1 %>% 
+	ggplot(aes(y = fit_ratio, x = round(stabil_potential, digits = 2))) + geom_point() +
+	ylab("Fitness difference")
+
+sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22))
+
+results_1 %>% 
+	mutate(rho2 = sqrt((a12*a21)/(a11*a22))) %>%
+	mutate(denom = a12*a21) %>% 
+	mutate(numer = a11*a22) %>%
+	mutate(thinger = denom/numer) %>% View
+
+### Explore different temperature dependences
+results_tilman <- data.frame()
+for(i in 1:6){
+	for(j in 1:6){
+		r_Ea <- 0.3
+		c_Ea <- 0.1*(i-1)
+		m_Ea <- 0.1*(j-1)
+		# hold <- temp_dependences_MacArthur(T = seq(0, 35, by = 0.1), r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp2 = 1)
+		hold <- find_alphas(T = seq(30, 30, by = 0.1), r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 1)
+		hold$r_Ea <- r_Ea
+		hold$c_Ea <- c_Ea
+		hold$m_Ea <- m_Ea
+		results_tilman <- bind_rows(results_tilman, hold)
+	}
+}
+
+temps <- seq(1,30, by = 0.1)
+
+hold <- find_alphas(T = T, r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 1)
+
+
 
 
 results <- data.frame()
@@ -147,7 +198,7 @@ for(i in 1:350){
 		m_Ea <- 0.1*(j-1)
 		T <- 0.1*(i-1)
 		hold <- find_alphas(T = T, r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 0)
-		# hold <- find_alphas(T = seq(25, 25, by = 0.1), r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 1)
+		# hold <- find_alphas(T = seq(0, 35, by = 0.1), r_Ea = r_Ea , c_Ea = c_Ea, m_Ea = m_Ea, ref_temp = 1)
 		hold$r_Ea <- r_Ea
 		hold$c_Ea <- c_Ea
 		hold$m_Ea <- m_Ea
