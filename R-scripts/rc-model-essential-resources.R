@@ -52,7 +52,18 @@ coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 
 ### We use the Arrhenius function to model the temperature dependence
 
-arrhenius_function <- function(Temp, E, b1, ref_temp = 1) {
+joeys_function <- function(temperature, activation_energy = 2) {
+	metabolism <- temperature*activation_energy
+	return(metabolism)
+}
+
+temperatures <- seq(from = 0, to = 35)
+
+
+metabolic_rates <- sapply(temperatures, joeys_function)
+metabolic_rates
+
+arrhenius_function <- function(Temp, E = 0.65, b1 = 10, ref_temp = 1) {
   k<-8.62e-05 #Boltzmann's constant
   E <- E # 0.6 # activation energy (eV)
   T<-Temp+273.15 #range of temp in K
@@ -61,6 +72,16 @@ arrhenius_function <- function(Temp, E, b1, ref_temp = 1) {
   metabolism<-(b1*exp(1)^(E*(1/(k*Tc)-1/(k*T))))
   return(metabolism)
 }
+
+growth_rate <- function(birth_rate, death_rate) {
+	growth <- birth_rate - death_rate
+}
+
+metabolic_rates <- data.frame(temperature = temperatures, birth_rate = sapply(temperatures, arrhenius_function), death_rate = sapply(temperatures, arrhenius_function))
+View(metabolic_rates)
+
+metabolic_rates %>% 
+	ggplot(aes(x = temperature, y = metabolic_rate)) + geom_point()
 
 ### to visualize what the arrhenius function looks like
 b <- arrhenius_function(Temp = 0:40, E = 0.6, b1 = 0.5, ref_temp = 1)

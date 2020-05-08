@@ -24,19 +24,19 @@ T <- 30
 # temp_dependences_MacArthur <- function(T = 25, r_Ea = 0.6, c_Ea = 0.6, K_Ea = 0, v_Ea = 0.0, m_Ea = 0.2, ref_temp2 = 0)
 
 
-# mutate(denom = a12*a21 - 30) %>% ### this needs to get smaller
-# 	mutate(numer = a11*a22 + 30) %>% ### this needs to get bigger
+# mutate(denom = a1N*a2P - 30) %>% ### this needs to get smaller
+# 	mutate(numer = a1P*a2N + 30) %>% ### this needs to get bigger
 
-# a11 <- c1P / (D * (SP - R1P))
-# a12 <- c2P / (D * (SP - R1P)) ## this
-# a21 <- c1N / (D * (SN - R2N))
-# a22 <- c2N / (D * (SN - R2N))
+# a1P <- c1P / (D * (SP - R1P))
+# a1N <- c2P / (D * (SP - R1P)) ## this
+# a2P <- c1N / (D * (SN - R2N))
+# a2N <- c2N / (D * (SN - R2N))
 
-# sqrt((a11*a12)/(a22*a21)) this needs to get smaller
+# sqrt((a1P*a1N)/(a2N*a2P)) this needs to get smaller
 
 T <- 10
 
-find_alphas <- function(T, r1_Ea = 0, r2_Ea = 0, c_Ea_1P = 0.6, c_Ea_1N = 0.4, c_Ea_2P = 0.9, c_Ea_2N = 0.1, k_Ea = 0, m_Ea1 = 0.2, m_Ea2 = 0.2, ref_temp = 20){
+find_alphas <- function(T, r1_Ea = 0, r2_Ea = 0, c_Ea_1P = 0.6, c_Ea_1N = 0.4, c_Ea_2P = 0.9, c_Ea_2N = 0.3, k_Ea = 0, m_Ea1 = 0.2, m_Ea2 = 0.2, ref_temp = 20){
 
 	c1P_b <- 15
 	c2P_b <- 4.5 ## slope for species 2 is  0.35
@@ -106,25 +106,25 @@ find_alphas <- function(T, r1_Ea = 0, r2_Ea = 0, c_Ea_1P = 0.6, c_Ea_1N = 0.4, c
 	
 	zones <- c("zone_middle", "zone_bottom", "zone_top")
 	zone <- zones[c(zone_middle, zone_bottom, zone_top)]
-	zone <- "zone_middle"
+	zone <- "zone_middle" ## P is resource 1, N is resource 2
 	alphas <- function(zone) {
 		if (zone == "zone_middle") {
-			a11 <- c1P / (D * (SP - R1P))
-			a12 <- c2P / (D * (SP - R1P))
-			a21 <- c1N / (D * (SN - R2N))
-			a22 <- c2N / (D * (SN - R2N))
+			a1P <- c1P / (D * (SP - R1P))
+			a1N <- c2P / (D * (SP - R1P))
+			a2P <- c1N / (D * (SN - R2N))
+			a2N <- c2N / (D * (SN - R2N))
 		} else if (zone == "zone_top") {
-			a11 <- c1N / (D * (SN - R1N))
-			a12 <- c2N / (D * (SN - R1N))
-			a21 <- c1N / (D * (SN - R2N))
-			a22 <- c2N / (D * (SN - R2N))
+			a1P <- c1N / (D * (SN - R1N))
+			a1N <- c2N / (D * (SN - R1N))
+			a2P <- c1N / (D * (SN - R2N))
+			a2N <- c2N / (D * (SN - R2N))
 		} else if (zone == "zone_bottom") {
-			a11 <- c1P / (D * (SP - R1P))
-			a12 <- c2P / (D * (SP - R1P))
-			a21 <- c1P / (D * (SP - R2P))
-			a22 <- c2P / (D * (SP - R2P))
+			a1P <- c1P / (D * (SP - R1P))
+			a1N <- c2P / (D * (SP - R1P))
+			a2P <- c1P / (D * (SP - R2P))
+			a2N <- c2P / (D * (SP - R2P))
 		}
-		alphas1 <- data.frame(a11 = a11, a12 = a12, a21 = a21, a22 = a22)
+		alphas1 <- data.frame(a1P = a1P, a1N = a1N, a2P = a2P, a2N = a2N)
 		return(alphas1)
 	}
 	
@@ -134,19 +134,19 @@ find_alphas <- function(T, r1_Ea = 0, r2_Ea = 0, c_Ea_1P = 0.6, c_Ea_1N = 0.4, c
 	
 	
 	
-	rho <- sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22)) #niche overlap
+	rho <- sqrt((alphas_calc$a1P*alphas_calc$a2N)/(alphas_calc$a1P*alphas_calc$a2P)) #niche overlap
 	stabil_potential <- 1 - rho #stabilizing potential
-	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21)) #fitness ratio 
+	fit_ratio <- sqrt((alphas_calc$a1P*alphas_calc$a1N)/(alphas_calc$a2N*alphas_calc$a2P)) #fitness ratio 
 	coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 	
 	
 	rs <- data.frame(R1N = R1N, R1P = R1P, R2N = R2N, R2P= R2P,
-			   K1 = (r1)/alphas_calc$a11, K2 = (r2)/alphas_calc$a22, T = T, m1 = m1, m2 = m2, c1P = c1P,
+			   K1 = (r1)/alphas_calc$a1P, K2 = (r2)/alphas_calc$a2N, T = T, m1 = m1, m2 = m2, c1P = c1P,
 					 c1N = c1N,
 			   c2P = c2P, c2N = c2N, stabil_potential = stabil_potential,
 			   fit_ratio = fit_ratio, rho = rho, coexist = coexist,
-				a11 = alphas_calc$a11, a12 = alphas_calc$a12,
-				a21 = alphas_calc$a21, a22 = alphas_calc$a22)
+				a1P = alphas_calc$a1P, a1N = alphas_calc$a1N,
+				a2P = alphas_calc$a2P, a2N = alphas_calc$a2N)
 	
 	alphas_calc2 <- bind_cols(r_s, comps, rs)
 	return(alphas_calc2)
@@ -164,6 +164,32 @@ results_1 <- temps %>%
 	map_df(find_alphas) %>% 
 	mutate(vec_slope1 = c1P/c1N) %>% 
 	mutate(vec_slope2 = c2P/c2N)
+
+
+results_1 %>% 
+	filter(T %in% c(35)) %>% 
+	ggplot(aes(x = R1N, y = R1P)) + geom_point(color = "purple") +
+	geom_segment(aes(x = R1N, y = R1P, xend = R1N + c1N, yend = R1P + c1P),
+				 size = 0.5, linetype = 1, alpha = 1, color = "purple") +
+	geom_segment(aes(x = R1N, y = R1P, xend = R1N, yend = 10),
+				 size = 0.5, linetype = 1, alpha = 1, color = "purple") +
+	geom_segment(aes(x = R1N, y = R1P, xend = 10, yend = R1P),
+				 size = 0.5, linetype = 1, alpha = 1, color = "purple") +
+	geom_point(aes(x = R2N, y = R2P), color = "pink") +
+	geom_segment(aes(x = R2N, y = R2P, xend = R2N + c2N, yend = R2P + c2P),
+				 size = 0.5, linetype = 1, alpha = 1, color = "pink") +
+	geom_segment(aes(x = R2N, y = R2P, xend = R2N, yend = 10),
+				 size = 0.5, linetype = 1, alpha = 1, color = "pink") +
+	geom_segment(aes(x = R2N, y = R2P, xend = 10, yend = R2P),
+				 size = 0.5, linetype = 1, alpha = 1, color = "pink") +
+	ylab("P (uM)") + xlab("N (uM)") +
+	coord_cartesian() +
+	theme( 
+		plot.margin = unit(c(0.8,0.8,0.8,0.8), "lines"),
+		axis.text = element_text(size=13),
+		axis.title=element_text(size=14)) +
+	panel_border(colour = "black") 
+
 
 
 results1 <- results_1 %>% 
@@ -193,28 +219,28 @@ results_1 %>%
 
 
 # check out what’s going on here ------------------------------------------
-# rho <- sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22)) #niche overlap
+# rho <- sqrt((alphas_calc$a1N*alphas_calc$a2P)/(alphas_calc$a1P*alphas_calc$a2N)) #niche overlap
 # stabil_potential <- 1 - rho #stabilizing potential
-# fit_ratio <- sqrt((a11*a12)/(a22*a21)) #fitness ratio 
+# fit_ratio <- sqrt((a1P*a1N)/(a2N*a2P)) #fitness ratio 
 # coexist <- rho < fit_ratio &  fit_ratio < 1/rho
-# a21 <- c1N / (D * (SN - R2N))
-# a22 <- c2N / (D * (SN - R2N))
+# a2P <- c1N / (D * (SN - R2N))
+# a2N <- c2N / (D * (SN - R2N))
 
 
 results_1 %>% 
 	mutate(denom = (D * (20 - R2N))) %>%
-	mutate(alpha21 = c1N / (D * (20 - R2N))) %>%
+	mutate(alpha2P = c1N / (D * (20 - R2N))) %>%
 	# filter(abs(denom) > 0.5) %>% 
 	ggplot() +
-	# # geom_line(aes(x = T, y = a11), color = "green") +
-	# # geom_line(aes(x = T, y = a12), color = "orange") +
-	# geom_point(aes(x = T, y = a21), color = "pink") +
+	# # geom_line(aes(x = T, y = a1P), color = "green") +
+	# # geom_line(aes(x = T, y = a1N), color = "orange") +
+	# geom_point(aes(x = T, y = a2P), color = "pink") +
 	# geom_line(aes(x = T, y = R2N), color = "blue") +
 	geom_line(aes(x = T, y = c1N), color = "pink") +
-	geom_line(aes(x = T, y = alpha21), color = "orange") +
+	geom_line(aes(x = T, y = alpha2P), color = "orange") +
 	geom_line(aes(x = T, y = denom), color = "purple") 
 # geom_point(aes(x = T, y = thing), color = "grey") +
-# geom_line(aes(x = T, y = a22), color = "blue") +
+# geom_line(aes(x = T, y = a2N), color = "blue") +
 # geom_line(aes(x = T, y = R2N), color = "blue")
 
 # R2N <- (m2 * k2N)/ (r2 - m2)
@@ -224,14 +250,14 @@ results1 <- results_1 %>%
 	mutate(r2_m2 = r2-m2) %>% 
 	mutate(m2k2N = m2*k2N) %>% 
 	mutate(r2n = (m2 * k2N)/ (r2 - m2)) %>% 
-	mutate(fit_numer_a11xa12 = a11*a12) %>% 
-	mutate(fit_denom_a22xa21 = a22*a21) %>% 
+	mutate(fit_numer_a1Pxa1N = a1P*a1N) %>% 
+	mutate(fit_denom_a2Nxa2P = a2N*a2P) %>% 
 	select(T, everything(), -zone) %>% 
 	gather(key = parameter, value = value, 2:31)
 
 results1 %>% 
 	# filter(parameter %in% c("r2_m2", "m2k2N")) %>% 
-	filter(parameter %in% c("fit_ratio", "fit_numer_a11xa12","fit_denom_a22xa21", "a11", "a12", "a21", "a22", "R2N", "c1N", "m2", "k2N", "r2", "r2_m2", "k2N", "m2k2N", "c2N")) %>% 
+	filter(parameter %in% c("vec_slope1", "vec_slope2", "fit_ratio", "fit_numer_a1Pxa1N","fit_denom_a2Nxa2P", "a1P", "a1N", "a2P", "a2N", "R2N", "c1N", "m2", "k2N", "r2", "r2_m2", "k2N", "m2k2N", "c2N")) %>% 
 	ggplot(aes(x = T, y = value, col = parameter)) +
 	geom_line() +
 	xlab("Temperature") +
@@ -260,8 +286,8 @@ results_wide <- results_1 %>%
 	mutate(r2_m2 = r2-m2) %>% 
 	mutate(m2k2N = m2*k2N) %>% 
 	mutate(r2n = (m2 * k2N)/ (r2 - m2)) %>% 
-	mutate(fit_numer = a11*a12) %>% 
-	mutate(fit_denom = a22*a21) %>% 
+	mutate(fit_numer = a1P*a1N) %>% 
+	mutate(fit_denom = a2N*a2P) %>% 
 	mutate(fit_rat = fit_numer / fit_denom) 
 	
 ggplot() +
@@ -434,22 +460,22 @@ find_alphas_r <- function(T, r1_Ea = 0.2, r2_Ea = 0.7, c_Ea_1P = 0, c_Ea_1N = 0,
 	zone <- "zone_middle"
 	alphas <- function(zone) {
 		if (zone == "zone_middle") {
-			a11 <- c1P / (D * (SP - R1P))
-			a12 <- c2P / (D * (SP - R1P))
-			a21 <- c1N / (D * (SN - R2N))
-			a22 <- c2N / (D * (SN - R2N))
+			a1P <- c1P / (D * (SP - R1P))
+			a1N <- c2P / (D * (SP - R1P))
+			a2P <- c1N / (D * (SN - R2N))
+			a2N <- c2N / (D * (SN - R2N))
 		} else if (zone == "zone_top") {
-			a11 <- c1N / (D * (SN - R1N))
-			a12 <- c2N / (D * (SN - R1N))
-			a21 <- c1N / (D * (SN - R2N))
-			a22 <- c2N / (D * (SN - R2N))
+			a1P <- c1N / (D * (SN - R1N))
+			a1N <- c2N / (D * (SN - R1N))
+			a2P <- c1N / (D * (SN - R2N))
+			a2N <- c2N / (D * (SN - R2N))
 		} else if (zone == "zone_bottom") {
-			a11 <- c1P / (D * (SP - R1P))
-			a12 <- c2P / (D * (SP - R1P))
-			a21 <- c1P / (D * (SP - R2P))
-			a22 <- c2P / (D * (SP - R2P))
+			a1P <- c1P / (D * (SP - R1P))
+			a1N <- c2P / (D * (SP - R1P))
+			a2P <- c1P / (D * (SP - R2P))
+			a2N <- c2P / (D * (SP - R2P))
 		}
-		alphas1 <- data.frame(a11 = a11, a12 = a12, a21 = a21, a22 = a22)
+		alphas1 <- data.frame(a1P = a1P, a1N = a1N, a2P = a2P, a2N = a2N)
 		return(alphas1)
 	}
 	
@@ -459,19 +485,19 @@ find_alphas_r <- function(T, r1_Ea = 0.2, r2_Ea = 0.7, c_Ea_1P = 0, c_Ea_1N = 0,
 	
 	
 	
-	rho <- sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22)) #niche overlap
+	rho <- sqrt((alphas_calc$a1N*alphas_calc$a2P)/(alphas_calc$a1P*alphas_calc$a2N)) #niche overlap
 	stabil_potential <- 1 - rho #stabilizing potential
-	fit_ratio <- sqrt((alphas_calc$a11*alphas_calc$a12)/(alphas_calc$a22*alphas_calc$a21)) #fitness ratio 
+	fit_ratio <- sqrt((alphas_calc$a1P*alphas_calc$a1N)/(alphas_calc$a2N*alphas_calc$a2P)) #fitness ratio 
 	coexist <- rho < fit_ratio &  fit_ratio < 1/rho
 	
 	
 	rs <- data.frame(R1N = R1N, R1P = R1P, R2N = R2N, R2P= R2P, k2N = k2N, k1N = k1N, k2P = k2P, k1P = k1P,
-					 K1 = (r1)/alphas_calc$a11, K2 = (r2)/alphas_calc$a22, T = T, m1 = m1, m2 = m2, c1P = c1P,
+					 K1 = (r1)/alphas_calc$a1P, K2 = (r2)/alphas_calc$a2N, T = T, m1 = m1, m2 = m2, c1P = c1P,
 					 c1N = c1N,
 					 c2P = c2P, c2N = c2N, stabil_potential = stabil_potential,
 					 fit_ratio = fit_ratio, rho = rho, coexist = coexist,
-					 a11 = alphas_calc$a11, a12 = alphas_calc$a12,
-					 a21 = alphas_calc$a21, a22 = alphas_calc$a22)
+					 a1P = alphas_calc$a1P, a1N = alphas_calc$a1N,
+					 a2P = alphas_calc$a2P, a2N = alphas_calc$a2N)
 	
 	alphas_calc2 <- bind_cols(r_s, comps, rs)
 	return(alphas_calc2)
@@ -587,8 +613,8 @@ results_1 %>%
 
 
 #these are weird
-# a21 <- c1N / (D * (SN - R2N))
-# a22 <- c2N / (D * (SN - R2N))
+# a2P <- c1N / (D * (SN - R2N))
+# a2N <- c2N / (D * (SN - R2N))
 
 
 results_1r %>% 
@@ -596,14 +622,14 @@ results_1r %>%
 	mutate(thing = c1N / (D * (20 - R2N))) %>%
 	# filter(abs(denom) > 0.5) %>% 
 	ggplot() +
-	# # geom_line(aes(x = T, y = a11), color = "green") +
-	# # geom_line(aes(x = T, y = a12), color = "orange") +
-	# geom_point(aes(x = T, y = a21), color = "pink") +
+	# # geom_line(aes(x = T, y = a1P), color = "green") +
+	# # geom_line(aes(x = T, y = a1N), color = "orange") +
+	# geom_point(aes(x = T, y = a2P), color = "pink") +
 	# geom_line(aes(x = T, y = R2N), color = "blue") +
 	geom_line(aes(x = T, y = c1N), color = "pink") +
 	geom_point(aes(x = T, y = denom), color = "purple") 
 	# geom_point(aes(x = T, y = thing), color = "grey") +
-	# geom_line(aes(x = T, y = a22), color = "blue") +
+	# geom_line(aes(x = T, y = a2N), color = "blue") +
 	# geom_line(aes(x = T, y = R2N), color = "blue")
 
 # R2N <- (m2 * k2N)/ (r2 - m2)
@@ -618,7 +644,7 @@ results1r <- results_1r %>%
 
 	results1r %>%
 		# filter(parameter %in% c("r2_m2", "m2k2N")) %>% 
-	filter(parameter %in% c("a11", "a12", "a21", "a22", "R2N", "c1N", "m2", "k2N", "r2", "r2_m2", "k2N", "m2k2N", "r2n")) %>% 
+	filter(parameter %in% c("a1P", "a1N", "a2P", "a2N", "R2N", "c1N", "m2", "k2N", "r2", "r2_m2", "k2N", "m2k2N", "r2n")) %>% 
 		ggplot(aes(x = T, y = value, col = parameter)) +
 	geom_line() +
 	xlab("Temperature") +
@@ -637,12 +663,12 @@ results_1 %>%
 	ggplot(aes(y = fit_ratio, x = round(stabil_potential, digits = 2))) + geom_point() +
 	ylab("Fitness difference")
 
-# sqrt((alphas_calc$a12*alphas_calc$a21)/(alphas_calc$a11*alphas_calc$a22))
+# sqrt((alphas_calc$a1N*alphas_calc$a2P)/(alphas_calc$a1P*alphas_calc$a2N))
 
 results_1 %>% 
-	mutate(rho2 = sqrt((a12*a21)/(a11*a22))) %>%
-	mutate(denom = a12*a21 - 30) %>% ### this needs to get smaller
-	mutate(numer = a11*a22 + 30) %>% ### this needs to get bigger
+	mutate(rho2 = sqrt((a1N*a2P)/(a1P*a2N))) %>%
+	mutate(denom = a1N*a2P - 30) %>% ### this needs to get smaller
+	mutate(numer = a1P*a2N + 30) %>% ### this needs to get bigger
 	mutate(thinger = denom/numer) %>% 
 	mutate(sthing = sqrt(thinger)) %>% 
 	mutate(stab = 1 - sthing) %>% View
@@ -690,7 +716,7 @@ for(i in 1:350){
 
 
 unique(results$rho)
-length(unique(results$a11))
+length(unique(results$a1P))
 max(results$fit_ratio)
 min(results$fit_ratio)
 
