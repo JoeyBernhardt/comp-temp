@@ -20,10 +20,12 @@ ui <- fluidPage(
    
    # Application title
    titlePanel("MacArthur consumer-resource model"),
-   
-   # Sidebar with a slider inputs
-   sidebarLayout(position = "right",
-      fluidRow(
+  
+   fluidRow(column(("Two consumer species (C1, C2) compete for two resources, (N, P). 
+   				 We model the temperature dependence of parameters r, K, c, m and v using an Arrhenius function."), width = 6),
+   		 column(img(src='macarthur-cr.png', height='300',width='300'), width = 6)),
+   		fluidRow(plotOutput("coolplot"), width = 12),
+   		fluidRow(
       	column(h4("For panel a, which parameters to dispay?"), offset = 0.1, 
       		selectInput('parameter1', 'Parameter 1', params),
       		selectInput('parameter2', 'Parameter 2', params, selected = params[[2]]),
@@ -78,16 +80,16 @@ ui <- fluidPage(
          	   			"Conversion of P into C2", min = 0.1, max = 1, value = 0.2, step= 0.05),
          	   width = 2)
          
-      ),
+      # ),
 
       
       # Show a plot of the time series
-      mainPanel(
-         plotOutput("coolplot"),
-         width = 0.8
-      )
+      # mainPanel(
+      #    plotOutput("coolplot"),
+      #    width = 0.8
+      # )
    )
-)
+   )
 
 server <- function(input, output) {
 	

@@ -1,0 +1,12 @@
+name: macarthur-consumer-resource-model
+title: MacArthur-consumer-resource-model
+username:
+account: joeybernhardt
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2295220
+bundleId: 3144405
+url: https://joeybernhardt.shinyapps.io/macarthur-consumer-resource-model/
+when: 1589409460.98179
+asMultiple: FALSE
+asStatic: FALSE
