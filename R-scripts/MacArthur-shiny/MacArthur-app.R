@@ -2,6 +2,7 @@
 #  You can run the application by clicking
 # the 'Run App' button above (green arrow button).
 
+### JB needs to fix the zero growth rate issue!
 
 library(shiny)
 library(cowplot)
@@ -12,6 +13,7 @@ theme_set(theme_cowplot())
 source("arrhenius_function.R")
 source("temp_dependences_MacArthur.R")
 source("plot_MacArthur.R")
+source("plot_MacArthur_alpha.R")
 
 
 params <- c("rN", "rP", "KN", "KP", "c1N", "c1P", "c2N", "c2P", "m1", "m2")
@@ -20,9 +22,10 @@ ui <- fluidPage(
    
    # Application title
    titlePanel("MacArthur consumer-resource model"),
-  
-   fluidRow(column(("Two consumer species (C1, C2) compete for two resources, (N, P). 
-   				 We model the temperature dependence of parameters r, K, c, m and v using an Arrhenius function."), width = 6)),
+   fluidRow(column(("Code written by JRB (building on PJK's), any mistakes are made by Joey!"), width = 4)),
+  fluidRow(column(img(src='joeys-macarthur-equations.png'), width = 6)),
+   # fluidRow(column(("Two consumer species (C1, C2) compete for two resources, (N, P). 
+   # 				 We model the temperature dependence of parameters r, K, c, m and v using an Arrhenius function."), width = 6)),
    		fluidRow(plotOutput("coolplot"), width = 12),
    		fluidRow(
       	column(h4("For panel a, which parameters to dispay?"), offset = 0.1, 

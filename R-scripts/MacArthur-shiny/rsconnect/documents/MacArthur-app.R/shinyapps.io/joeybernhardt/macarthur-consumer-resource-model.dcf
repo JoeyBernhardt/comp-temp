@@ -5,8 +5,8 @@ account: joeybernhardt
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2295220
-bundleId: 3144667
+bundleId: 3144682
 url: https://joeybernhardt.shinyapps.io/macarthur-consumer-resource-model/
-when: 1589412897.48594
+when: 1589413107.06463
 asMultiple: FALSE
 asStatic: FALSE
