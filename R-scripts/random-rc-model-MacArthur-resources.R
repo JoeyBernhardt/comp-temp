@@ -307,15 +307,16 @@ plot_MacArthur_random <- function(Data.temperature){
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-r-unequal-vs.png", plot = Plot.r, device = "png", width=17.5, height=4)
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-r-alpha.png", plot = Plot.alpha.r, device = "png", width=10.5, height=4)
 
+### Mean reference species vs. Random target species
 times = 200
 Random.r = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
 for(i in 1:times){
   temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
-                                    r_Ea1 = 0.3, r_Ea2 = 0.3 * 1.5,
-                                    K_Ea1 = -0.3, K_Ea2 = -0.3 * runif(1, 0.9, 1.1),
-                                    c_Ea11 = 0.8, c_Ea12 = 0.8,
-                                    c_Ea21 = 0.8 * runif(1, 0.9, 1.1), c_Ea22 = 0.8 * runif(1, 0.9, 1.1),
-                                    v_Ea1 = 0.0, v_Ea2 = 0.0,
+                                    r_EaN = 0.3, r_EaP = 0.3 * 1.5,
+                                    K_EaN = -0.3, K_EaP = -0.3 * runif(1, 0.9, 1.1),
+                                    c_Ea1N = 0.8, c_Ea1P = 0.8,
+                                    c_Ea2N = 0.8 * runif(1, 0.9, 1.1), c_Ea2P = 0.8 * runif(1, 0.9, 1.1),
+                                    v_EaN = 0.0, v_EaP = 0.0,
                                     m_Ea1 = 0.6, m_Ea2 = 0.6 * runif(1, 0.9, 1.1))
   temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
   Random.r[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
@@ -324,6 +325,29 @@ for(i in 1:times){
 Plot.r.random = plot_MacArthur_random(Random.r)
 ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_r.pdf", plot = Plot.r.random, device = "pdf", width=8, height=4)
 
+### Random reference species vs. Deviate-one-trait target species
+times = 200
+Random.ref.r = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
+for(i in 1:times){
+  Rand_r_EaN = 0.3 * runif(1, 0.9, 1.1)
+  Rand_K_EaN = -0.3 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1N = 0.8 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1P = 0.8 * runif(1, 0.9, 1.1)
+  Rand_v_EaN = 0.0
+  Rand_m_Ea1 = 0.6 * runif(1, 0.9, 1.1)
+  temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
+                                    r_EaN = Rand_r_EaN, r_EaP = Rand_r_EaN * 1.5,
+                                    K_EaN = Rand_K_EaN, K_EaP = Rand_K_EaN,
+                                    c_Ea1N = Rand_c_Ea1N, c_Ea1P = Rand_c_Ea1P,
+                                    c_Ea2N = Rand_c_Ea1N, c_Ea2P = Rand_c_Ea1P,
+                                    v_EaN = Rand_v_EaN, v_EaP = Rand_v_EaN,
+                                    m_Ea1 = Rand_m_Ea1, m_Ea2 = Rand_m_Ea1)
+  temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
+  Random.ref.r[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
+  names(Random.ref.r) = names(temp)
+}
+Plot.r.random.ref = plot_MacArthur_random(Random.ref.r)
+ggsave(filename ="../figures/RandomReferenceSpecies/RandomMacArthur_r.pdf", plot = Plot.r.random.ref, device = "pdf", width=8, height=4)
 
 
 ### K varies with temperature & species have different activation energy for K (benefitting Sp1: K_Ea2 > K_Ea1)
@@ -351,15 +375,16 @@ ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_r.pdf", plot = 
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-K.png", plot=Plot.K, device = "png", width=17.5, height=4)
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-K-alpha.png", plot=Plot.alpha.K, device = "png", width=10.5, height=4)
 
+### Mean reference species vs. Random target species
 times = 200
 Random.K = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
 for(i in 1:times){
   temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
-                                    r_Ea1 = 0.3, r_Ea2 = 0.3 * runif(1, 0.9, 1.1),
-                                    K_Ea1 = -0.3, K_Ea2 = -0.3 * 0.5,
-                                    c_Ea11 = 0.8, c_Ea12 = 0.8,
-                                    c_Ea21 = 0.8 * runif(1, 0.9, 1.1), c_Ea22 = 0.8 * runif(1, 0.9, 1.1),
-                                    v_Ea1 = 0.0, v_Ea2 = 0.0,
+                                    r_EaN = 0.3, r_EaP = 0.3 * runif(1, 0.9, 1.1),
+                                    K_EaN = -0.3, K_EaP = -0.3 * 0.5,
+                                    c_Ea1N = 0.8, c_Ea1P = 0.8,
+                                    c_Ea2N = 0.8 * runif(1, 0.9, 1.1), c_Ea2P = 0.8 * runif(1, 0.9, 1.1),
+                                    v_EaN = 0.0, v_EaP = 0.0,
                                     m_Ea1 = 0.6, m_Ea2 = 0.6 * runif(1, 0.9, 1.1))
   temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
   Random.K[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
@@ -368,6 +393,29 @@ for(i in 1:times){
 Plot.K.random = plot_MacArthur_random(Random.K)
 ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_K.pdf", plot = Plot.K.random, device = "pdf", width=8, height=4)
 
+### Random reference species vs. Deviate-one-trait target species
+times = 200
+Random.ref.K = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
+for(i in 1:times){
+  Rand_r_EaN = 0.3 * runif(1, 0.9, 1.1)
+  Rand_K_EaN = -0.3 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1N = 0.8 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1P = 0.8 * runif(1, 0.9, 1.1)
+  Rand_v_EaN = 0.0
+  Rand_m_Ea1 = 0.6 * runif(1, 0.9, 1.1)
+  temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
+                                    r_EaN = Rand_r_EaN, r_EaP = Rand_r_EaN,
+                                    K_EaN = Rand_K_EaN, K_EaP = Rand_K_EaN * 0.5,
+                                    c_Ea1N = Rand_c_Ea1N, c_Ea1P = Rand_c_Ea1P,
+                                    c_Ea2N = Rand_c_Ea1N, c_Ea2P = Rand_c_Ea1P,
+                                    v_EaN = Rand_v_EaN, v_EaP = Rand_v_EaN,
+                                    m_Ea1 = Rand_m_Ea1, m_Ea2 = Rand_m_Ea1)
+  temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
+  Random.ref.K[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
+  names(Random.ref.K) = names(temp)
+}
+Plot.K.random.ref = plot_MacArthur_random(Random.ref.K)
+ggsave(filename ="../figures/RandomReferenceSpecies/RandomMacArthur_K.pdf", plot = Plot.K.random.ref, device = "pdf", width=8, height=4)
 
 
 ### m varies with temperature & species have different activation energy for m (benefitting Sp1: m_Ea1 < m_Ea2)
@@ -395,15 +443,16 @@ ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_K.pdf", plot = 
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-m.png", plot=Plot.m, device = "png", width=17.5, height=4)
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-m-alpha.png", plot=Plot.alpha.m, device = "png", width=10.5, height=4)
 
+### Mean reference species vs. Random target species
 times = 200
 Random.m = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
 for(i in 1:times){
   temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
-                                    r_Ea1 = 0.3, r_Ea2 = 0.3 * runif(1, 0.9, 1.1),
-                                    K_Ea1 = -0.3, K_Ea2 = -0.3 * runif(1, 0.9, 1.1),
-                                    c_Ea11 = 0.8, c_Ea12 = 0.8,
-                                    c_Ea21 = 0.8 * runif(1, 0.9, 1.1), c_Ea22 = 0.8 * runif(1, 0.9, 1.1),
-                                    v_Ea1 = 0.0, v_Ea2 = 0.0,
+                                    r_EaN = 0.3, r_EaP = 0.3 * runif(1, 0.9, 1.1),
+                                    K_EaN = -0.3, K_EaP = -0.3 * runif(1, 0.9, 1.1),
+                                    c_Ea1N = 0.8, c_Ea1P = 0.8,
+                                    c_Ea2N = 0.8 * runif(1, 0.9, 1.1), c_Ea2P = 0.8 * runif(1, 0.9, 1.1),
+                                    v_EaN = 0.0, v_EaP = 0.0,
                                     m_Ea1 = 0.6, m_Ea2 = 0.6 * 1.5)
   temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
   Random.m[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
@@ -412,6 +461,29 @@ for(i in 1:times){
 Plot.m.random = plot_MacArthur_random(Random.m)
 ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_m.pdf", plot = Plot.m.random, device = "pdf", width=8, height=4)
 
+### Random reference species vs. Deviate-one-trait target species
+times = 200
+Random.ref.m = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
+for(i in 1:times){
+  Rand_r_EaN = 0.3 * runif(1, 0.9, 1.1)
+  Rand_K_EaN = -0.3 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1N = 0.8 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1P = 0.8 * runif(1, 0.9, 1.1)
+  Rand_v_EaN = 0.0
+  Rand_m_Ea1 = 0.6 * runif(1, 0.9, 1.1)
+  temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
+                                    r_EaN = Rand_r_EaN, r_EaP = Rand_r_EaN,
+                                    K_EaN = Rand_K_EaN, K_EaP = Rand_K_EaN,
+                                    c_Ea1N = Rand_c_Ea1N, c_Ea1P = Rand_c_Ea1P,
+                                    c_Ea2N = Rand_c_Ea1N, c_Ea2P = Rand_c_Ea1P,
+                                    v_EaN = Rand_v_EaN, v_EaP = Rand_v_EaN,
+                                    m_Ea1 = Rand_m_Ea1, m_Ea2 = Rand_m_Ea1 * 1.5)
+  temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
+  Random.ref.m[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
+  names(Random.ref.m) = names(temp)
+}
+Plot.m.random.ref = plot_MacArthur_random(Random.ref.m)
+ggsave(filename ="../figures/RandomReferenceSpecies/RandomMacArthur_m.pdf", plot = Plot.m.random.ref, device = "pdf", width=8, height=4)
 
 
 ### c varies with temperature & species have different activation energy for c (benefitting Sp1: c_Ea1i > c_Ea2i)
@@ -444,15 +516,16 @@ ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_m.pdf", plot = 
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-c.png", plot=Plot.c, device = "png", width=17.5, height=4)
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-c-alpha.png", plot=Plot.alpha.c, device = "png", width=10.5, height=4)
 
+### Mean reference species vs. Random target species
 times = 200
 Random.c = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
 for(i in 1:times){
   temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
-                                    r_Ea1 = 0.3, r_Ea2 = 0.3 * runif(1, 0.9, 1.1),
-                                    K_Ea1 = -0.3, K_Ea2 = -0.3 * runif(1, 0.9, 1.1),
-                                    c_Ea11 = 0.8, c_Ea12 = 0.8,
-                                    c_Ea21 = 0.8 * 0.5, c_Ea22 = 0.8 * 0.5,
-                                    v_Ea1 = 0.0, v_Ea2 = 0.0,
+                                    r_EaN = 0.3, r_EaP = 0.3 * runif(1, 0.9, 1.1),
+                                    K_EaN = -0.3, K_EaP = -0.3 * runif(1, 0.9, 1.1),
+                                    c_Ea1N = 0.8, c_Ea1P = 0.8,
+                                    c_Ea2N = 0.8 * 0.5, c_Ea2P = 0.8 * 0.5,
+                                    v_EaN = 0.0, v_EaP = 0.0,
                                     m_Ea1 = 0.6, m_Ea2 = 0.6 * runif(1, 0.9, 1.1))
   temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
   Random.c[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
@@ -460,6 +533,30 @@ for(i in 1:times){
 }
 Plot.c.random = plot_MacArthur_random(Random.c)
 ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_c.pdf", plot = Plot.c.random, device = "pdf", width=8, height=4)
+
+### Random reference species vs. Deviate-one-trait target species
+times = 200
+Random.ref.c = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
+for(i in 1:times){
+  Rand_r_EaN = 0.3 * runif(1, 0.9, 1.1)
+  Rand_K_EaN = -0.3 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1N = 0.8 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1P = 0.8 * runif(1, 0.9, 1.1)
+  Rand_v_EaN = 0.0
+  Rand_m_Ea1 = 0.6 * runif(1, 0.9, 1.1)
+  temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
+                                    r_EaN = Rand_r_EaN, r_EaP = Rand_r_EaN,
+                                    K_EaN = Rand_K_EaN, K_EaP = Rand_K_EaN,
+                                    c_Ea1N = Rand_c_Ea1N, c_Ea1P = Rand_c_Ea1P,
+                                    c_Ea2N = Rand_c_Ea1N * 0.5, c_Ea2P = Rand_c_Ea1P * 0.5,
+                                    v_EaN = Rand_v_EaN, v_EaP = Rand_v_EaN,
+                                    m_Ea1 = Rand_m_Ea1, m_Ea2 = Rand_m_Ea1)
+  temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
+  Random.ref.c[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
+  names(Random.ref.c) = names(temp)
+}
+Plot.c.random.ref = plot_MacArthur_random(Random.ref.c)
+ggsave(filename ="../figures/RandomReferenceSpecies/RandomMacArthur_c.pdf", plot = Plot.c.random.ref, device = "pdf", width=8, height=4)
 
 
 ### preference varies with temperature & species have different activation energy for c (c_Ea11 > c_Ea12 & c_Ea22 > c_Ea21)
@@ -487,15 +584,16 @@ ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_c.pdf", plot = 
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-p.png", plot=Plot.p, device = "png", width=14, height=4)
 # ggsave(file="figures/joey-exploring/MacArthur-scenario-p-alpha.png", plot=Plot.alpha.p, device = "png", width=10.5, height=4)
 
+### Mean reference species vs. Random target species
 times = 200
 Random.p = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
 for(i in 1:times){
   temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
-                                    r_Ea1 = 0.3, r_Ea2 = 0.3 * runif(1, 0.9, 1.1),
-                                    K_Ea1 = -0.3, K_Ea2 = -0.3 * runif(1, 0.9, 1.1),
-                                    c_Ea11 = 1.0, c_Ea12 = 0.8,
-                                    c_Ea21 = 0.8 * 0.75, c_Ea22 = 1.0 * 1.0,
-                                    v_Ea1 = 0.0, v_Ea2 = 0.0,
+                                    r_EaN = 0.3, r_EaP = 0.3 * runif(1, 0.9, 1.1),
+                                    K_EaN = -0.3, K_EaP = -0.3 * runif(1, 0.9, 1.1),
+                                    c_Ea1N = 1.0, c_Ea1P = 0.8,
+                                    c_Ea2N = 0.8 * 0.5, c_Ea2P = 1.0 * 0.5,
+                                    v_EaN = 0.0, v_EaP = 0.0,
                                     m_Ea1 = 0.6, m_Ea2 = 0.6 * runif(1, 0.9, 1.1))
   temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
   Random.p[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
@@ -503,6 +601,30 @@ for(i in 1:times){
 }
 Plot.p.random = plot_MacArthur_random(Random.p)
 ggsave(filename ="../figures/RandomTargetSpecies/RandomMacArthur_p2.pdf", plot = Plot.p.random, device = "pdf", width=8, height=4)
+
+### Random reference species vs. Deviate-one-trait target species
+times = 200
+Random.ref.p = as.data.frame(matrix(0, length(seq(0.5, 35, by = 0.5)) * times, 21 + 1))
+for(i in 1:times){
+  Rand_r_EaN = 0.3 * runif(1, 0.9, 1.1)
+  Rand_K_EaN = -0.3 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1N = 1.0 * runif(1, 0.9, 1.1)
+  Rand_c_Ea1P = 0.8 * runif(1, 0.9, 1.1)
+  Rand_v_EaN = 0.0
+  Rand_m_Ea1 = 0.6 * runif(1, 0.9, 1.1)
+  temp = temp_dependences_MacArthur(T = seq(0.5, 35, by = 0.5),
+                                    r_EaN = Rand_r_EaN, r_EaP = Rand_r_EaN,
+                                    K_EaN = Rand_K_EaN, K_EaP = Rand_K_EaN,
+                                    c_Ea1N = Rand_c_Ea1N, c_Ea1P = Rand_c_Ea1P,
+                                    c_Ea2N = Rand_c_Ea1P * 0.5, c_Ea2P = Rand_c_Ea1N * 0.5,
+                                    v_EaN = Rand_v_EaN, v_EaP = Rand_v_EaN,
+                                    m_Ea1 = Rand_m_Ea1, m_Ea2 = Rand_m_Ea1)
+  temp$Trial = rep(i, length(seq(0.5, 35, by = 0.5)))
+  Random.ref.p[(length(seq(0.5, 35, by = 0.5)) * (i - 1) + 1) : ((length(seq(0.5, 35, by = 0.5))) * (i - 1) + length(seq(0.5, 35, by = 0.5))), ] = temp
+  names(Random.ref.p) = names(temp)
+}
+Plot.p.random.ref = plot_MacArthur_random(Random.ref.p)
+ggsave(filename ="../figures/RandomReferenceSpecies/RandomMacArthur_p1.pdf", plot = Plot.p.random.ref, device = "pdf", width=8, height=4)
 
 
 
